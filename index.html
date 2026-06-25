@@ -10,6 +10,7 @@
     <meta name="theme-color" content="#f43f5e">
     <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="icon" type="image/png" href="favicon.png">
+
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -22,6 +23,7 @@
                     animation: {
                         'blob': 'blob 7s infinite',
                         'wiggle': 'wiggle 1s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     },
                     keyframes: {
                         blob: {
@@ -50,91 +52,114 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Glass Panel */
+        /* Enhanced Glass Panel */
         .glass-panel {
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dark .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
         
         /* Smooth button presses */
         .btn-press {
-            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .btn-press:active {
-            transform: scale(0.94);
+            transform: scale(0.96);
         }
+
+        /* Animation Delays for Blobs */
+        .animation-delay-2000 { animation-delay: 2s; }
+        .animation-delay-4000 { animation-delay: 4s; }
 
         /* Custom Input Scrollbar */
         textarea::-webkit-scrollbar { width: 4px; }
         textarea::-webkit-scrollbar-track { background: transparent; }
-        textarea::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.5); border-radius: 4px; }
+        textarea::-webkit-scrollbar-thumb { background: rgba(244, 63, 94, 0.5); border-radius: 4px; }
     </style>
 </head>
-<body class="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-500 flex items-center justify-center p-4 relative overflow-hidden">
+<body class="min-h-screen bg-slate-100 dark:bg-slate-900 transition-colors duration-500 flex items-center justify-center p-4 relative overflow-hidden">
 
     <!-- Playful Background Blobs -->
-    <div class="absolute top-0 -left-4 w-72 h-72 bg-purple-300 dark:bg-purple-900 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-70 animate-blob"></div>
-    <div class="absolute top-0 -right-4 w-72 h-72 bg-rose-300 dark:bg-rose-900 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-    <div class="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 dark:bg-pink-900 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+    <div class="absolute top-0 -left-4 w-72 h-72 bg-purple-400 dark:bg-purple-900 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-2xl opacity-60 animate-blob"></div>
+    <div class="absolute top-0 -right-4 w-72 h-72 bg-rose-400 dark:bg-rose-900 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-2xl opacity-60 animate-blob animation-delay-2000"></div>
+    <div class="absolute -bottom-8 left-20 w-72 h-72 bg-pink-400 dark:bg-pink-900 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-2xl opacity-60 animate-blob animation-delay-4000"></div>
 
     <!-- ================== LOGIN SCREEN ================== -->
-    <div id="login-screen" class="glass-panel w-full max-w-sm bg-white/80 dark:bg-slate-800/80 border border-white/50 dark:border-slate-700/50 shadow-2xl dark:shadow-slate-900/50 rounded-3xl p-8 relative z-20 text-center transition-all duration-500">
-        <div class="mx-auto w-16 h-16 bg-rose-100 dark:bg-rose-900/50 rounded-full flex items-center justify-center mb-4">
-            <i data-lucide="lock" class="w-8 h-8 text-rose-500 dark:text-rose-400"></i>
+    <div id="login-screen" class="glass-panel w-full max-w-sm rounded-[2rem] p-8 relative z-20 text-center transition-all duration-700 transform">
+        <div class="mx-auto w-20 h-20 bg-gradient-to-br from-rose-100 to-pink-100 dark:from-rose-900/50 dark:to-pink-900/50 rounded-full flex items-center justify-center mb-6 shadow-inner relative overflow-hidden">
+            <div class="absolute inset-0 bg-rose-400/20 animate-pulse-slow"></div>
+            <i data-lucide="heart-lock" class="w-10 h-10 text-rose-500 dark:text-rose-400 relative z-10"></i>
         </div>
-        <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Private Connection</h2>
-        <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Enter our special date to unlock.</p>
+        <h2 class="text-2xl font-extrabold text-slate-800 dark:text-white mb-2 tracking-tight">Secret Connection</h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mb-8">Enter our special date to unlock.</p>
         
-        <input type="password" id="passInput" class="w-full bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-center text-slate-800 dark:text-white mb-4 focus:outline-none focus:border-rose-400 focus:ring-1 focus:ring-rose-400 tracking-widest" placeholder="D/M/YYYY">
+        <div class="relative mb-6">
+            <input type="password" id="passInput" class="w-full bg-white/50 dark:bg-slate-900/50 border-2 border-slate-200 dark:border-slate-700/50 rounded-2xl p-4 text-center text-lg font-medium text-slate-800 dark:text-white focus:outline-none focus:border-rose-400 focus:ring-0 transition-all tracking-[0.2em] shadow-inner" placeholder="DD/MM/YYYY">
+        </div>
         
-        <button id="loginBtn" class="btn-press w-full bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-pink-500/30">
+        <button id="loginBtn" class="btn-press w-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-400 hover:to-pink-500 text-white font-bold text-lg py-4 rounded-2xl shadow-xl shadow-rose-500/30 tracking-wide">
             Unlock
         </button>
-        <p id="loginError" class="text-xs text-rose-500 dark:text-rose-400 mt-3 font-medium opacity-0 transition-opacity">Incorrect date. Try again! ❤️</p>
+        <p id="loginError" class="text-sm text-rose-500 dark:text-rose-400 mt-4 font-medium opacity-0 transition-opacity duration-300">Incorrect date. Try again! ❤️</p>
     </div>
 
     <!-- ================== MAIN APP (HIDDEN INITIALLY) ================== -->
-    <div id="main-app" class="hidden glass-panel w-full max-w-sm bg-white/80 dark:bg-slate-800/80 border border-white/50 dark:border-slate-700/50 shadow-2xl dark:shadow-slate-900/50 rounded-3xl p-6 relative z-10 transition-colors duration-500">
+    <div id="main-app" class="hidden glass-panel w-full max-w-sm rounded-[2rem] p-6 relative z-10 transition-all duration-700 opacity-0 transform translate-y-4">
         
         <!-- Header -->
         <div class="flex items-center justify-between mb-6">
             <div>
-                <h1 class="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2 transition-colors duration-500">
-                    <i data-lucide="mail-heart" class="text-rose-500"></i>
+                <h1 class="text-xl font-extrabold text-slate-800 dark:text-white flex items-center gap-2 tracking-tight transition-colors duration-500">
+                    <div class="p-2 bg-rose-100 dark:bg-rose-900/40 rounded-xl">
+                        <i data-lucide="mail-heart" class="w-5 h-5 text-rose-500"></i>
+                    </div>
                     Drop a Note
                 </h1>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1" id="connection-status">
-                    <span id="status-dot" class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
-                    Connecting...
+                <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-1.5" id="connection-status">
+                    <span id="status-dot" class="w-2.5 h-2.5 rounded-full bg-yellow-400 animate-pulse shadow-[0_0_8px_rgba(250,204,21,0.6)]"></span>
+                    Connecting to desk...
                 </p>
             </div>
             
             <!-- Dark Mode Toggle -->
-            <button id="themeToggle" class="p-2 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
+            <button id="themeToggle" class="btn-press p-2.5 rounded-xl bg-white/50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-600 shadow-sm transition-all">
                 <i data-lucide="moon" id="moonIcon" class="w-5 h-5 hidden dark:block"></i>
                 <i data-lucide="sun" id="sunIcon" class="w-5 h-5 block dark:hidden"></i>
             </button>
         </div>
 
         <!-- Text Message Section -->
-        <div class="mb-6">
-            <textarea id="messageInput" rows="3" 
-                class="w-full bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-rose-400 focus:ring-1 focus:ring-rose-400 resize-none transition-all shadow-inner"
-                placeholder="Hey babe, just wanted to say..."></textarea>
+        <div class="mb-6 relative">
+            <div class="relative">
+                <!-- Max length set to 80 because a 20x4 LCD holds exactly 80 characters! -->
+                <textarea id="messageInput" rows="3" maxlength="80"
+                    class="w-full bg-white/50 dark:bg-slate-900/50 border-2 border-slate-200 dark:border-slate-700/50 rounded-2xl p-4 pb-8 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-rose-400 transition-all shadow-inner font-medium resize-none"
+                    placeholder="Hey babe, just wanted to say..."></textarea>
                 
-            <button id="sendMsgBtn" class="btn-press mt-3 w-full bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-pink-500/30 flex items-center justify-center gap-2">
-                <i data-lucide="send" class="w-4 h-4"></i>
-                Send to LCD
-            </button>
-            <div class="h-4 mt-2 flex justify-center">
-                <p id="msg-feedback" class="text-xs text-rose-500 dark:text-rose-400 font-medium opacity-0 transition-opacity duration-300">Sent!</p>
+                <!-- Character Counter -->
+                <div class="absolute bottom-3 right-3 text-xs font-bold text-slate-400 dark:text-slate-500" id="charCounter">0/80</div>
+                <!-- Clear Button -->
+                <button id="clearBtn" class="absolute bottom-2.5 left-3 text-xs font-bold text-slate-400 hover:text-rose-500 transition-colors hidden">Clear</button>
             </div>
+                
+            <button id="sendMsgBtn" class="btn-press mt-4 w-full bg-gradient-to-r from-rose-500 to-pink-600 text-white font-bold text-lg py-4 rounded-2xl shadow-xl shadow-rose-500/30 flex items-center justify-center gap-2 group transition-all">
+                <i data-lucide="send" class="w-5 h-5 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform"></i>
+                <span id="sendBtnText">Send to his screen</span>
+            </button>
         </div>
 
         <!-- Buzzer Section -->
-        <div class="mt-2 pt-6 border-t border-slate-200 dark:border-slate-700 transition-colors duration-500">
-            <button id="buzzBtn" class="btn-press w-full bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 group">
-                <i data-lucide="bell-ring" class="w-5 h-5 group-hover:animate-wiggle"></i>
+        <div class="mt-4 pt-6 border-t-2 border-slate-200/60 dark:border-slate-700/60 transition-colors duration-500">
+            <button id="buzzBtn" class="btn-press w-full bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white font-bold text-lg py-4 rounded-2xl shadow-xl shadow-orange-500/30 flex items-center justify-center gap-2 group">
+                <i data-lucide="bell-ring" class="w-6 h-6 group-hover:animate-wiggle"></i>
                 Buzz His Desk!
             </button>
         </div>
@@ -142,31 +167,27 @@
 
     <!-- Fun "He's thinking of you" Popup Modal -->
     <div id="love-popup" class="fixed inset-0 flex items-center justify-center pointer-events-none z-50 opacity-0 transition-opacity duration-300">
-        <!-- Overlay backdrop -->
-        <div class="absolute inset-0 bg-slate-900/20 dark:bg-slate-900/60 backdrop-blur-sm"></div>
-        
-        <!-- Bouncy Card -->
-        <div id="love-popup-card" class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl transform scale-50 transition-transform duration-500 text-center border-2 border-pink-200 dark:border-pink-900 relative z-10 flex flex-col items-center gap-4">
+        <div class="absolute inset-0 bg-slate-900/30 dark:bg-slate-900/70 backdrop-blur-md"></div>
+        <div id="love-popup-card" class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl p-8 rounded-[2rem] shadow-2xl transform scale-50 transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) text-center border border-pink-200 dark:border-pink-800 relative z-10 flex flex-col items-center gap-4">
             <div class="relative">
-                <i data-lucide="heart" class="w-20 h-20 text-rose-500 fill-rose-500 animate-bounce relative z-10"></i>
-                <!-- Glow behind heart -->
-                <div class="absolute inset-0 bg-rose-400 blur-xl opacity-50 rounded-full"></div>
+                <i data-lucide="heart" class="w-24 h-24 text-rose-500 fill-rose-500 animate-bounce relative z-10 filter drop-shadow-lg"></i>
+                <div class="absolute inset-0 bg-rose-400 blur-2xl opacity-60 rounded-full animate-pulse"></div>
             </div>
-            <h2 class="text-2xl font-bold text-slate-800 dark:text-white mt-2">Ding! 💖</h2>
-            <p class="text-slate-600 dark:text-slate-300 font-medium">He is thinking about you!</p>
+            <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mt-2 tracking-tight">Ding! 💖</h2>
+            <p class="text-lg text-slate-600 dark:text-slate-300 font-medium">He is thinking about you right now!</p>
         </div>
     </div>
 
     <!-- Acknowledgement Popup -->
     <div id="ack-popup" class="fixed inset-0 flex items-center justify-center pointer-events-none z-50 opacity-0 transition-opacity duration-300">
-        <div class="absolute inset-0 bg-slate-900/20 dark:bg-slate-900/60 backdrop-blur-sm"></div>
-        <div id="ack-popup-card" class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl transform scale-50 transition-transform duration-500 text-center border-2 border-emerald-200 dark:border-emerald-900 relative z-10 flex flex-col items-center gap-4">
+        <div class="absolute inset-0 bg-slate-900/30 dark:bg-slate-900/70 backdrop-blur-md"></div>
+        <div id="ack-popup-card" class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl p-8 rounded-[2rem] shadow-2xl transform scale-50 transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) text-center border border-emerald-200 dark:border-emerald-800 relative z-10 flex flex-col items-center gap-4">
             <div class="relative">
-                <i data-lucide="check-circle-2" class="w-20 h-20 text-emerald-500 relative z-10"></i>
-                <div class="absolute inset-0 bg-emerald-400 blur-xl opacity-50 rounded-full"></div>
+                <i data-lucide="check-circle-2" class="w-24 h-24 text-emerald-500 relative z-10 filter drop-shadow-lg"></i>
+                <div class="absolute inset-0 bg-emerald-400 blur-2xl opacity-60 rounded-full animate-pulse"></div>
             </div>
-            <h2 class="text-2xl font-bold text-slate-800 dark:text-white mt-2">He got it! ✨</h2>
-            <p class="text-slate-600 dark:text-slate-300 font-medium">He turned off the buzzer.</p>
+            <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mt-2 tracking-tight">He got it! ✨</h2>
+            <p class="text-lg text-slate-600 dark:text-slate-300 font-medium">He turned off the desk alarm.</p>
         </div>
     </div>
 
@@ -194,14 +215,70 @@
             localStorage.theme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
         });
 
+        // UI Elements
+        const messageInput = document.getElementById('messageInput');
+        const charCounter = document.getElementById('charCounter');
+        const clearBtn = document.getElementById('clearBtn');
+        const sendBtnText = document.getElementById('sendBtnText');
+        const sendMsgBtn = document.getElementById('sendMsgBtn');
+        const buzzBtn = document.getElementById('buzzBtn');
+
+        // Character Counter & Clear Button Logic
+        messageInput.addEventListener('input', function() {
+            const length = this.value.length;
+            charCounter.textContent = `${length}/80`;
+            
+            if(length >= 80) {
+                charCounter.classList.remove('text-slate-400', 'dark:text-slate-500');
+                charCounter.classList.add('text-rose-500');
+            } else {
+                charCounter.classList.add('text-slate-400', 'dark:text-slate-500');
+                charCounter.classList.remove('text-rose-500');
+            }
+
+            if(length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+        });
+
+        clearBtn.addEventListener('click', () => {
+            messageInput.value = '';
+            charCounter.textContent = '0/80';
+            charCounter.classList.remove('text-rose-500');
+            charCounter.classList.add('text-slate-400', 'dark:text-slate-500');
+            clearBtn.classList.add('hidden');
+            messageInput.focus();
+        });
+
         // ================== LOGIN LOGIC ==================
         const loginBtn = document.getElementById('loginBtn');
         const passInput = document.getElementById('passInput');
         
-        // Check if already authenticated from previous session
+        function showMainApp() {
+            const loginScreen = document.getElementById('login-screen');
+            const mainApp = document.getElementById('main-app');
+            
+            loginScreen.style.opacity = '0';
+            loginScreen.style.transform = 'translateY(-20px)';
+            
+            setTimeout(() => {
+                loginScreen.classList.add('hidden');
+                mainApp.classList.remove('hidden');
+                // Trigger reflow for animation
+                void mainApp.offsetWidth; 
+                mainApp.style.opacity = '1';
+                mainApp.style.transform = 'translateY(0)';
+            }, 400); // Matches CSS duration
+        }
+
         if (localStorage.getItem('isAuthenticated') === 'true') {
             document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('main-app').classList.remove('hidden');
+            const mainApp = document.getElementById('main-app');
+            mainApp.classList.remove('hidden');
+            mainApp.style.opacity = '1';
+            mainApp.style.transform = 'translateY(0)';
             initFirebase();
         }
 
@@ -210,19 +287,17 @@
 
         function attemptLogin() {
             if (passInput.value === "17/01/2024") {
-                // Save authentication status so it remembers for next time
                 localStorage.setItem('isAuthenticated', 'true');
-                
-                // Hide login, show main app
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('main-app').classList.remove('hidden');
-                
-                // Now initialize Firebase connection
+                showMainApp();
                 initFirebase();
             } else {
                 const errorText = document.getElementById('loginError');
                 errorText.style.opacity = '1';
-                setTimeout(() => errorText.style.opacity = '0', 2000);
+                passInput.classList.add('border-rose-500');
+                setTimeout(() => {
+                    errorText.style.opacity = '0';
+                    passInput.classList.remove('border-rose-500');
+                }, 2000);
             }
         }
 
@@ -231,7 +306,7 @@
             const firebaseConfig = {
                 apiKey: "AIzaSyDr0plgf2AdJZjhofO8khaN7nmag_bviNI",
                 authDomain: "ishi-device.firebaseapp.com",
-                databaseURL: "https://ishi-device-default-rtdb.firebaseio.com",
+                databaseURL: "https://ishi-device-default-rtdb.asia-southeast1.firebasedatabase.app",
                 projectId: "ishi-device",
                 storageBucket: "ishi-device.firebasestorage.app",
                 messagingSenderId: "360047105285",
@@ -244,71 +319,71 @@
 
             // Sign in anonymously
             signInAnonymously(auth).then(() => {
-                document.getElementById('connection-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span> Connected';
+                document.getElementById('connection-status').innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)]"></span> Connected securely';
                 
                 // 1. Send Text
-                document.getElementById('sendMsgBtn').addEventListener('click', () => {
-                    const msg = document.getElementById('messageInput').value;
+                sendMsgBtn.addEventListener('click', () => {
+                    const msg = messageInput.value;
                     if(msg.trim() === "") return;
                     
+                    // Visual feedback
+                    sendBtnText.textContent = "Sending...";
+                    sendMsgBtn.classList.add('opacity-80', 'cursor-not-allowed');
+                    sendMsgBtn.disabled = true;
+
                     set(ref(db, 'messages/text'), msg).then(() => {
-                        const feedback = document.getElementById('msg-feedback');
-                        feedback.style.opacity = '1';
-                        setTimeout(() => feedback.style.opacity = '0', 2000);
-                        document.getElementById('messageInput').value = ""; 
+                        sendBtnText.textContent = "Delivered! ✓";
+                        messageInput.value = ""; 
+                        charCounter.textContent = "0/80";
+                        clearBtn.classList.add('hidden');
+                        
+                        setTimeout(() => {
+                            sendBtnText.textContent = "Send to his screen";
+                            sendMsgBtn.classList.remove('opacity-80', 'cursor-not-allowed');
+                            sendMsgBtn.disabled = false;
+                        }, 2000);
                     });
                 });
 
                 // 2. Trigger Buzzer
-                document.getElementById('buzzBtn').addEventListener('click', () => {
+                buzzBtn.addEventListener('click', () => {
                     set(ref(db, 'commands/buzz'), true);
+                    const originalHTML = buzzBtn.innerHTML;
+                    buzzBtn.innerHTML = '<i data-lucide="check" class="w-6 h-6"></i> Desk Alerted!';
+                    lucide.createIcons();
+                    setTimeout(() => {
+                        buzzBtn.innerHTML = originalHTML;
+                        lucide.createIcons();
+                    }, 2000);
                 });
 
                 // 3. Listen to physical button press from ESP32
                 onValue(ref(db, 'status/reply'), (snapshot) => {
                     const status = snapshot.val();
                     if (status === "heart_burst") {
-                        triggerFunPopup();
+                        triggerFunPopup('love-popup', 'love-popup-card');
                     } else if (status === "buzz_stopped") {
-                        triggerAckPopup();
+                        triggerFunPopup('ack-popup', 'ack-popup-card');
                     }
                 });
 
             }).catch((error) => {
                 console.error("Auth Error:", error);
-                document.getElementById('connection-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-red-400"></span> Connection Failed';
+                document.getElementById('connection-status').innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.8)]"></span> Connection Failed';
             });
         }
 
-        // --- Fun Visual Effects ---
-        function triggerFunPopup() {
-            const popup = document.getElementById('love-popup');
-            const card = document.getElementById('love-popup-card');
+        // --- Shared Visual Effect Function ---
+        function triggerFunPopup(popupId, cardId) {
+            const popup = document.getElementById(popupId);
+            const card = document.getElementById(cardId);
             
             popup.style.opacity = '1';
-            
             setTimeout(() => { card.style.transform = 'scale(1)'; }, 50);
 
             if (navigator.vibrate) {
+                // Heartbeat vibration pattern
                 navigator.vibrate([100, 50, 100, 50, 200]);
-            }
-
-            setTimeout(() => {
-                card.style.transform = 'scale(0.5)';
-                popup.style.opacity = '0';
-            }, 3500);
-        }
-
-        // --- Acknowledgement Effect ---
-        function triggerAckPopup() {
-            const popup = document.getElementById('ack-popup');
-            const card = document.getElementById('ack-popup-card');
-            
-            popup.style.opacity = '1';
-            setTimeout(() => { card.style.transform = 'scale(1)'; }, 50);
-
-            if (navigator.vibrate) {
-                navigator.vibrate([50, 100, 50]);
             }
 
             setTimeout(() => {
