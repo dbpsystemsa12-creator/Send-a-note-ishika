@@ -1,0 +1,21 @@
+{
+  "name": "Drop a Note ❤️",
+  "short_name": "Note ❤️",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#f43f5e",
+  "description": "A direct connection to his desk.",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
