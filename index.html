@@ -139,13 +139,13 @@
         <!-- Text Message Section -->
         <div class="mb-6 relative">
             <div class="relative">
-                <!-- Max length set to 80 because a 20x4 LCD holds exactly 80 characters! -->
-                <textarea id="messageInput" rows="3" maxlength="80"
+                <!-- Removed maxlength="80" to allow for smart JS validation -->
+                <textarea id="messageInput" rows="3" 
                     class="w-full bg-white/50 dark:bg-slate-900/50 border-2 border-slate-200 dark:border-slate-700/50 rounded-2xl p-4 pb-8 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-rose-400 transition-all shadow-inner font-medium resize-none"
-                    placeholder="Heyy type whatever you want to..."></textarea>
+                    placeholder="heyy type in a message..."></textarea>
                 
                 <!-- Character Counter -->
-                <div class="absolute bottom-3 right-3 text-xs font-bold text-slate-400 dark:text-slate-500" id="charCounter">0/80</div>
+                <div class="absolute bottom-3 right-3 text-xs font-bold text-slate-400 dark:text-slate-500" id="charCounter">0/4 Lines</div>
                 <!-- Clear Button -->
                 <button id="clearBtn" class="absolute bottom-2.5 left-3 text-xs font-bold text-slate-400 hover:text-rose-500 transition-colors hidden">Clear</button>
             </div>
@@ -223,32 +223,91 @@
         const sendMsgBtn = document.getElementById('sendMsgBtn');
         const buzzBtn = document.getElementById('buzzBtn');
 
+        // --- NEW: Smart LCD Simulation Logic ---
+        function isTextTooLongForLCD(text) {
+            // Replace newlines with spaces just like the ESP32 does
+            text = text.replace(/[\n\r]/g, " ");
+            let row = 0;
+            let col = 0;
+            let i = 0;
+
+            while (i < text.length && row < 4) {
+                if (col === 0) {
+                    while (i < text.length && text[i] === ' ') i++;
+                    if (i >= text.length) break;
+                }
+
+                let nextSpace = text.indexOf(' ', i);
+                let wordLen = (nextSpace === -1) ? (text.length - i) : (nextSpace - i);
+
+                if (wordLen > 20) {
+                    let spaceLeft = 20 - col;
+                    i += spaceLeft;
+                    row++;
+                    col = 0;
+                    continue;
+                }
+
+                if (col + wordLen <= 20) {
+                    col += wordLen;
+                    i += wordLen;
+                    if (col < 20 && i < text.length && text[i] === ' ') {
+                        col++;
+                        i++;
+                    }
+                } else {
+                    row++;
+                    col = 0;
+                }
+            }
+            return i < text.length; // Returns true if text overflows 4 rows
+        }
+
         // Character Counter & Clear Button Logic
         messageInput.addEventListener('input', function() {
-            const length = this.value.length;
-            charCounter.textContent = `${length}/80`;
+            const text = this.value;
+            const isTooLong = isTextTooLongForLCD(text);
             
-            if(length >= 80) {
+            if(isTooLong) {
+                charCounter.textContent = "Too long! ⚠️";
                 charCounter.classList.remove('text-slate-400', 'dark:text-slate-500');
                 charCounter.classList.add('text-rose-500');
+                sendMsgBtn.disabled = true;
+                sendMsgBtn.classList.add('opacity-50', 'cursor-not-allowed', 'grayscale');
             } else {
+                charCounter.textContent = "Fits on LCD ✓";
                 charCounter.classList.add('text-slate-400', 'dark:text-slate-500');
                 charCounter.classList.remove('text-rose-500');
+                sendMsgBtn.disabled = false;
+                sendMsgBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'grayscale');
             }
 
-            if(length > 0) {
+            if(text.length > 0) {
                 clearBtn.classList.remove('hidden');
             } else {
                 clearBtn.classList.add('hidden');
+                charCounter.textContent = "0/4 Lines";
+            }
+        });
+
+        // Make the "Enter" key send the message automatically (if it fits)
+        messageInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault(); 
+                if(!sendMsgBtn.disabled) {
+                    sendMsgBtn.click(); 
+                }
             }
         });
 
         clearBtn.addEventListener('click', () => {
             messageInput.value = '';
-            charCounter.textContent = '0/80';
+            charCounter.textContent = '0/4 Lines';
             charCounter.classList.remove('text-rose-500');
             charCounter.classList.add('text-slate-400', 'dark:text-slate-500');
             clearBtn.classList.add('hidden');
+            sendMsgBtn.disabled = false;
+            sendMsgBtn.classList.remove('opacity-50', 'cursor-not-allowed', 'grayscale');
             messageInput.focus();
         });
 
@@ -324,7 +383,7 @@
                 // 1. Send Text
                 sendMsgBtn.addEventListener('click', () => {
                     const msg = messageInput.value;
-                    if(msg.trim() === "") return;
+                    if(msg.trim() === "" || isTextTooLongForLCD(msg)) return;
                     
                     // Visual feedback
                     sendBtnText.textContent = "Sending...";
@@ -334,7 +393,7 @@
                     set(ref(db, 'messages/text'), msg).then(() => {
                         sendBtnText.textContent = "Delivered! ✓";
                         messageInput.value = ""; 
-                        charCounter.textContent = "0/80";
+                        charCounter.textContent = "0/4 Lines";
                         clearBtn.classList.add('hidden');
                         
                         setTimeout(() => {
