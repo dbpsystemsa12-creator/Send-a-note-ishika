@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Drop a Note ❤️</title>
+    
+    <!-- PWA Requirements -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#f43f5e">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configure Tailwind for Dark Mode and Custom Animations -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                        'wiggle': 'wiggle 1s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-3deg)' },
+                            '50%': { transform: 'rotate(3deg)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Glass Panel */
+        .glass-panel {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        
+        /* Smooth button presses */
+        .btn-press {
+            transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
+        }
+        .btn-press:active {
+            transform: scale(0.94);
+        }
+
+        /* Custom Input Scrollbar */
+        textarea::-webkit-scrollbar { width: 4px; }
+        textarea::-webkit-scrollbar-track { background: transparent; }
+        textarea::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.5); border-radius: 4px; }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-500 flex items-center justify-center p-4 relative overflow-hidden">
+
+    <!-- Playful Background Blobs -->
+    <div class="absolute top-0 -left-4 w-72 h-72 bg-purple-300 dark:bg-purple-900 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-70 animate-blob"></div>
+    <div class="absolute top-0 -right-4 w-72 h-72 bg-rose-300 dark:bg-rose-900 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+    <div class="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 dark:bg-pink-900 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+
+    <!-- ================== LOGIN SCREEN ================== -->
+    <div id="login-screen" class="glass-panel w-full max-w-sm bg-white/80 dark:bg-slate-800/80 border border-white/50 dark:border-slate-700/50 shadow-2xl dark:shadow-slate-900/50 rounded-3xl p-8 relative z-20 text-center transition-all duration-500">
+        <div class="mx-auto w-16 h-16 bg-rose-100 dark:bg-rose-900/50 rounded-full flex items-center justify-center mb-4">
+            <i data-lucide="lock" class="w-8 h-8 text-rose-500 dark:text-rose-400"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Private Connection</h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Enter our special date to unlock.</p>
+        
+        <input type="password" id="passInput" class="w-full bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl p-4 text-center text-slate-800 dark:text-white mb-4 focus:outline-none focus:border-rose-400 focus:ring-1 focus:ring-rose-400 tracking-widest" placeholder="D/M/YYYY">
+        
+        <button id="loginBtn" class="btn-press w-full bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-pink-500/30">
+            Unlock
+        </button>
+        <p id="loginError" class="text-xs text-rose-500 dark:text-rose-400 mt-3 font-medium opacity-0 transition-opacity">Incorrect date. Try again! ❤️</p>
+    </div>
+
+    <!-- ================== MAIN APP (HIDDEN INITIALLY) ================== -->
+    <div id="main-app" class="hidden glass-panel w-full max-w-sm bg-white/80 dark:bg-slate-800/80 border border-white/50 dark:border-slate-700/50 shadow-2xl dark:shadow-slate-900/50 rounded-3xl p-6 relative z-10 transition-colors duration-500">
+        
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2 transition-colors duration-500">
+                    <i data-lucide="mail-heart" class="text-rose-500"></i>
+                    Drop a Note
+                </h1>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1" id="connection-status">
+                    <span id="status-dot" class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
+                    Connecting...
+                </p>
+            </div>
+            
+            <!-- Dark Mode Toggle -->
+            <button id="themeToggle" class="p-2 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
+                <i data-lucide="moon" id="moonIcon" class="w-5 h-5 hidden dark:block"></i>
+                <i data-lucide="sun" id="sunIcon" class="w-5 h-5 block dark:hidden"></i>
+            </button>
+        </div>
+
+        <!-- Text Message Section -->
+        <div class="mb-6">
+            <textarea id="messageInput" rows="3" 
+                class="w-full bg-slate-100/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-rose-400 focus:ring-1 focus:ring-rose-400 resize-none transition-all shadow-inner"
+                placeholder="Hey babe, just wanted to say..."></textarea>
+                
+            <button id="sendMsgBtn" class="btn-press mt-3 w-full bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-pink-500/30 flex items-center justify-center gap-2">
+                <i data-lucide="send" class="w-4 h-4"></i>
+                Send to LCD
+            </button>
+            <div class="h-4 mt-2 flex justify-center">
+                <p id="msg-feedback" class="text-xs text-rose-500 dark:text-rose-400 font-medium opacity-0 transition-opacity duration-300">Sent!</p>
+            </div>
+        </div>
+
+        <!-- Buzzer Section -->
+        <div class="mt-2 pt-6 border-t border-slate-200 dark:border-slate-700 transition-colors duration-500">
+            <button id="buzzBtn" class="btn-press w-full bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 group">
+                <i data-lucide="bell-ring" class="w-5 h-5 group-hover:animate-wiggle"></i>
+                Buzz His Desk!
+            </button>
+        </div>
+    </div>
+
+    <!-- Fun "He's thinking of you" Popup Modal -->
+    <div id="love-popup" class="fixed inset-0 flex items-center justify-center pointer-events-none z-50 opacity-0 transition-opacity duration-300">
+        <!-- Overlay backdrop -->
+        <div class="absolute inset-0 bg-slate-900/20 dark:bg-slate-900/60 backdrop-blur-sm"></div>
+        
+        <!-- Bouncy Card -->
+        <div id="love-popup-card" class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl transform scale-50 transition-transform duration-500 text-center border-2 border-pink-200 dark:border-pink-900 relative z-10 flex flex-col items-center gap-4">
+            <div class="relative">
+                <i data-lucide="heart" class="w-20 h-20 text-rose-500 fill-rose-500 animate-bounce relative z-10"></i>
+                <!-- Glow behind heart -->
+                <div class="absolute inset-0 bg-rose-400 blur-xl opacity-50 rounded-full"></div>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-white mt-2">Ding! 💖</h2>
+            <p class="text-slate-600 dark:text-slate-300 font-medium">He is thinking about you!</p>
+        </div>
+    </div>
+
+    <!-- Acknowledgement Popup -->
+    <div id="ack-popup" class="fixed inset-0 flex items-center justify-center pointer-events-none z-50 opacity-0 transition-opacity duration-300">
+        <div class="absolute inset-0 bg-slate-900/20 dark:bg-slate-900/60 backdrop-blur-sm"></div>
+        <div id="ack-popup-card" class="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-2xl transform scale-50 transition-transform duration-500 text-center border-2 border-emerald-200 dark:border-emerald-900 relative z-10 flex flex-col items-center gap-4">
+            <div class="relative">
+                <i data-lucide="check-circle-2" class="w-20 h-20 text-emerald-500 relative z-10"></i>
+                <div class="absolute inset-0 bg-emerald-400 blur-xl opacity-50 rounded-full"></div>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-white mt-2">He got it! ✨</h2>
+            <p class="text-slate-600 dark:text-slate-300 font-medium">He turned off the buzzer.</p>
+        </div>
+    </div>
+
+    <!-- Firebase SDK & App Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // UI Initialization
+        lucide.createIcons();
+
+        // Theme Toggle Logic
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            htmlElement.classList.add('dark');
+        } else {
+            htmlElement.classList.remove('dark');
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            htmlElement.classList.toggle('dark');
+            localStorage.theme = htmlElement.classList.contains('dark') ? 'dark' : 'light';
+        });
+
+        // ================== LOGIN LOGIC ==================
+        const loginBtn = document.getElementById('loginBtn');
+        const passInput = document.getElementById('passInput');
+        
+        // Check if already authenticated from previous session
+        if (localStorage.getItem('isAuthenticated') === 'true') {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            initFirebase();
+        }
+
+        loginBtn.addEventListener('click', attemptLogin);
+        passInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') attemptLogin(); });
+
+        function attemptLogin() {
+            if (passInput.value === "17/01/2024") {
+                // Save authentication status so it remembers for next time
+                localStorage.setItem('isAuthenticated', 'true');
+                
+                // Hide login, show main app
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                
+                // Now initialize Firebase connection
+                initFirebase();
+            } else {
+                const errorText = document.getElementById('loginError');
+                errorText.style.opacity = '1';
+                setTimeout(() => errorText.style.opacity = '0', 2000);
+            }
+        }
+
+        // ================== FIREBASE LOGIC ==================
+        function initFirebase() {
+            const firebaseConfig = {
+                apiKey: "AIzaSyDr0plgf2AdJZjhofO8khaN7nmag_bviNI",
+                authDomain: "ishi-device.firebaseapp.com",
+                databaseURL: "https://ishi-device-default-rtdb.firebaseio.com",
+                projectId: "ishi-device",
+                storageBucket: "ishi-device.firebasestorage.app",
+                messagingSenderId: "360047105285",
+                appId: "1:360047105285:web:4bd5f57ed7b1974e5a136c"
+            };
+
+            const app = initializeApp(firebaseConfig);
+            const db = getDatabase(app);
+            const auth = getAuth(app);
+
+            // Sign in anonymously
+            signInAnonymously(auth).then(() => {
+                document.getElementById('connection-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span> Connected';
+                
+                // 1. Send Text
+                document.getElementById('sendMsgBtn').addEventListener('click', () => {
+                    const msg = document.getElementById('messageInput').value;
+                    if(msg.trim() === "") return;
+                    
+                    set(ref(db, 'messages/text'), msg).then(() => {
+                        const feedback = document.getElementById('msg-feedback');
+                        feedback.style.opacity = '1';
+                        setTimeout(() => feedback.style.opacity = '0', 2000);
+                        document.getElementById('messageInput').value = ""; 
+                    });
+                });
+
+                // 2. Trigger Buzzer
+                document.getElementById('buzzBtn').addEventListener('click', () => {
+                    set(ref(db, 'commands/buzz'), true);
+                });
+
+                // 3. Listen to physical button press from ESP32
+                onValue(ref(db, 'status/reply'), (snapshot) => {
+                    const status = snapshot.val();
+                    if (status === "heart_burst") {
+                        triggerFunPopup();
+                    } else if (status === "buzz_stopped") {
+                        triggerAckPopup();
+                    }
+                });
+
+            }).catch((error) => {
+                console.error("Auth Error:", error);
+                document.getElementById('connection-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-red-400"></span> Connection Failed';
+            });
+        }
+
+        // --- Fun Visual Effects ---
+        function triggerFunPopup() {
+            const popup = document.getElementById('love-popup');
+            const card = document.getElementById('love-popup-card');
+            
+            popup.style.opacity = '1';
+            
+            setTimeout(() => { card.style.transform = 'scale(1)'; }, 50);
+
+            if (navigator.vibrate) {
+                navigator.vibrate([100, 50, 100, 50, 200]);
+            }
+
+            setTimeout(() => {
+                card.style.transform = 'scale(0.5)';
+                popup.style.opacity = '0';
+            }, 3500);
+        }
+
+        // --- Acknowledgement Effect ---
+        function triggerAckPopup() {
+            const popup = document.getElementById('ack-popup');
+            const card = document.getElementById('ack-popup-card');
+            
+            popup.style.opacity = '1';
+            setTimeout(() => { card.style.transform = 'scale(1)'; }, 50);
+
+            if (navigator.vibrate) {
+                navigator.vibrate([50, 100, 50]);
+            }
+
+            setTimeout(() => {
+                card.style.transform = 'scale(0.5)';
+                popup.style.opacity = '0';
+            }, 3500);
+        }
+
+        // --- PWA Service Worker Registration ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then(registration => {
+                    console.log('SW registered');
+                }).catch(err => {
+                    console.log('SW registration failed');
+                });
+            });
+        }
+    </script>
+</body>
+</html>
