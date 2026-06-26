@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- AGGRESSIVE CACHE BUSTERS -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Drop a Note ❤️</title>
     
     <!-- PWA Requirements -->
@@ -42,7 +46,7 @@
         }
     </script>
 
-    <!-- Lucide Icons -->
+    <!-- Lucide Icons (Used for static parts only now) -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
@@ -52,7 +56,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Enhanced Glass Panel */
         .glass-panel {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(24px);
@@ -67,19 +70,11 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
         
-        /* Smooth button presses */
-        .btn-press {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .btn-press:active {
-            transform: scale(0.96);
-        }
-
-        /* Animation Delays for Blobs */
+        .btn-press { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .btn-press:active { transform: scale(0.96); }
         .animation-delay-2000 { animation-delay: 2s; }
         .animation-delay-4000 { animation-delay: 4s; }
 
-        /* Custom Scrollbars for Textarea and History */
         .custom-scrollbar::-webkit-scrollbar, textarea::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track, textarea::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb, textarea::-webkit-scrollbar-thumb { background: rgba(244, 63, 94, 0.5); border-radius: 4px; }
@@ -111,7 +106,7 @@
         <p id="loginError" class="text-sm text-rose-500 dark:text-rose-400 mt-4 font-medium opacity-0 transition-opacity duration-300">Incorrect date. Try again! ❤️</p>
     </div>
 
-    <!-- ================== MAIN APP (HIDDEN INITIALLY) ================== -->
+    <!-- ================== MAIN APP ================== -->
     <div id="main-app" class="hidden glass-panel w-full max-w-sm rounded-[2rem] p-6 relative z-10 transition-all duration-700 opacity-0 transform translate-y-4">
         
         <!-- Header -->
@@ -129,18 +124,16 @@
                 </p>
             </div>
             
-            <!-- Dark Mode Toggle -->
             <button id="themeToggle" class="btn-press p-2.5 rounded-xl bg-white/50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-600 shadow-sm transition-all">
-                <i data-lucide="moon" id="moonIcon" class="w-5 h-5 hidden dark:block"></i>
-                <i data-lucide="sun" id="sunIcon" class="w-5 h-5 block dark:hidden"></i>
+                <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
+                <i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
             </button>
         </div>
 
         <!-- Inline Notification Banner -->
         <div id="notification-banner" class="hidden opacity-0 -translate-y-2 transform transition-all duration-500 mb-6 rounded-2xl bg-gradient-to-r from-rose-100 to-pink-100 dark:from-rose-900/40 dark:to-pink-900/40 border border-rose-200 dark:border-rose-800 p-4 flex items-center gap-4 shadow-inner">
             <div id="notif-icon-container" class="relative">
-                <i id="notif-icon" data-lucide="heart" class="w-7 h-7 text-rose-500 fill-rose-500 animate-bounce relative z-10 filter drop-shadow-md"></i>
-                <div class="absolute inset-0 bg-rose-400 blur-xl opacity-60 rounded-full animate-pulse"></div>
+                <!-- SVG Icon is injected via JS to prevent any bugs -->
             </div>
             <div class="flex-1">
                 <h3 id="notif-title" class="font-bold text-slate-800 dark:text-rose-100 text-sm tracking-tight">Ding! 💖</h3>
@@ -156,29 +149,27 @@
             <div class="relative">
                 <textarea id="messageInput" rows="3" 
                     class="w-full bg-white/50 dark:bg-slate-900/50 border-2 border-slate-200 dark:border-slate-700/50 rounded-2xl p-4 pb-8 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-rose-400 transition-all shadow-inner font-medium resize-none custom-scrollbar"
-                    placeholder="helloo jaanuu..."></textarea>
+                    placeholder="Helloo jaanuu..."></textarea>
                 
-                <!-- Character Counter -->
                 <div class="absolute bottom-3 right-3 text-xs font-bold text-slate-400 dark:text-slate-500" id="charCounter">0/4 Lines</div>
-                <!-- Clear Button -->
                 <button id="clearBtn" class="absolute bottom-2.5 left-3 text-xs font-bold text-slate-400 hover:text-rose-500 transition-colors hidden">Clear</button>
             </div>
                 
             <button id="sendMsgBtn" class="btn-press mt-4 w-full bg-gradient-to-r from-rose-500 to-pink-600 text-white font-bold text-lg py-4 rounded-2xl shadow-xl shadow-rose-500/30 flex items-center justify-center gap-2 group transition-all">
                 <i data-lucide="send" class="w-5 h-5 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform"></i>
-                <span id="sendBtnText">Send to his screen</span>
+                <span>Send to his screen</span>
             </button>
         </div>
 
         <!-- Buzzer Section -->
         <div class="mt-4 pt-6 border-t-2 border-slate-200/60 dark:border-slate-700/60 transition-colors duration-500">
             <button id="buzzBtn" class="btn-press w-full bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white font-bold text-lg py-4 rounded-2xl shadow-xl shadow-orange-500/30 flex items-center justify-center gap-2 group transition-all">
-                <i id="buzzBtnIcon" data-lucide="bell-ring" class="w-6 h-6 group-hover:animate-wiggle"></i>
-                <span id="buzzBtnText">Buzz His Desk!</span>
+                <i data-lucide="bell-ring" class="w-6 h-6 group-hover:animate-wiggle"></i>
+                <span>Buzz His Desk!</span>
             </button>
         </div>
 
-        <!-- NEW: History / Activity Log Section -->
+        <!-- History / Activity Log Section -->
         <div class="mt-6 pt-5 border-t-2 border-slate-200/60 dark:border-slate-700/60 transition-colors duration-500">
             <div class="flex items-center justify-between mb-3">
                 <h3 class="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
@@ -189,7 +180,6 @@
             
             <div id="historyLog" class="custom-scrollbar max-h-36 overflow-y-auto space-y-2 pr-1">
                 <p id="emptyHistory" class="text-xs text-slate-400 text-center py-4 italic">No activity yet</p>
-                <!-- Log entries will be inserted here dynamically -->
             </div>
         </div>
     </div>
@@ -199,6 +189,30 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // --- EXTREME CACHE WIPER --- 
+        // This instantly deletes the old broken app memory on her phone and forces a refresh
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                let shouldReload = false;
+                for(let registration of registrations) {
+                    registration.unregister();
+                    shouldReload = true;
+                }
+                if (shouldReload) {
+                    window.location.reload(true);
+                }
+            });
+        }
+
+        // --- RAW SVGS (Bulletproof replacement to stop crashes) ---
+        const svgIcons = {
+            send: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`,
+            checkBtn: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
+            bell: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:animate-wiggle"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>`,
+            heartPopup: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="relative z-10 filter drop-shadow-md text-rose-500 animate-bounce"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
+            checkPopup: `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="relative z-10 filter drop-shadow-md text-emerald-500 fill-emerald-100"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`
+        };
 
         // UI Initialization
         lucide.createIcons();
@@ -222,15 +236,12 @@
         const messageInput = document.getElementById('messageInput');
         const charCounter = document.getElementById('charCounter');
         const clearBtn = document.getElementById('clearBtn');
-        const sendBtnText = document.getElementById('sendBtnText');
         const sendMsgBtn = document.getElementById('sendMsgBtn');
         const buzzBtn = document.getElementById('buzzBtn');
-        const buzzBtnIcon = document.getElementById('buzzBtnIcon');
-        const buzzBtnText = document.getElementById('buzzBtnText');
 
         // Notification Banner Elements
         const notifBanner = document.getElementById('notification-banner');
-        const notifIcon = document.getElementById('notif-icon');
+        const notifIconContainer = document.getElementById('notif-icon-container');
         const notifTitle = document.getElementById('notif-title');
         const notifDesc = document.getElementById('notif-desc');
         const closeNotifBtn = document.getElementById('closeNotifBtn');
@@ -244,20 +255,25 @@
 
         closeNotifBtn.addEventListener('click', closeNotification);
 
-        function showNotification(title, desc, iconName, colorClass) {
+        // BULLETPROOF NOTIFICATION FUNCTION
+        function showNotification(title, desc, svgGraphic, glowColor) {
             clearTimeout(notifTimeout);
             notifTitle.textContent = title;
             notifDesc.textContent = desc;
             
-            notifIcon.setAttribute('data-lucide', iconName);
-            notifIcon.className = `w-7 h-7 relative z-10 filter drop-shadow-md ${colorClass}`;
-            lucide.createIcons();
+            // Radically inject raw SVG HTML to prevent crashes
+            notifIconContainer.innerHTML = `
+                ${svgGraphic}
+                <div class="absolute inset-0 ${glowColor} blur-xl opacity-60 rounded-full animate-pulse"></div>
+            `;
             
             notifBanner.classList.remove('hidden');
-            setTimeout(() => {
-                notifBanner.classList.remove('opacity-0', '-translate-y-2');
-                notifBanner.classList.add('opacity-100', 'translate-y-0');
-            }, 10);
+            
+            // Force browser to realize it needs to animate
+            void notifBanner.offsetWidth; 
+            
+            notifBanner.classList.remove('opacity-0', '-translate-y-2');
+            notifBanner.classList.add('opacity-100', 'translate-y-0');
             
             notifTimeout = setTimeout(closeNotification, 8000);
         }
@@ -269,8 +285,6 @@
 
         function renderAllHistory() {
             const history = JSON.parse(localStorage.getItem('loveBoxHistory') || '[]');
-            
-            // Remove existing dynamic items so we don't duplicate
             document.querySelectorAll('.history-item').forEach(el => el.remove());
             
             if (history.length > 0) {
@@ -297,16 +311,15 @@
         }
 
         function addHistory(action, icon, color) {
-            // Get current local time nicely formatted (e.g. 2:15 PM)
             const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const item = { action, icon, color, time };
             
             let history = JSON.parse(localStorage.getItem('loveBoxHistory') || '[]');
-            history.unshift(item); // Add newest to the top
-            if(history.length > 20) history.pop(); // Keep only the last 20 items to save space
+            history.unshift(item); 
+            if(history.length > 20) history.pop(); 
             
             localStorage.setItem('loveBoxHistory', JSON.stringify(history));
-            renderAllHistory(); // Re-draw list
+            renderAllHistory(); 
         }
 
         clearHistoryBtn.addEventListener('click', () => {
@@ -349,7 +362,6 @@
             return i < text.length; 
         }
 
-        // Character Counter & Clear Button Logic
         messageInput.addEventListener('input', function() {
             const text = this.value;
             const isTooLong = isTextTooLongForLCD(text);
@@ -458,7 +470,6 @@
             const db = getDatabase(app);
             const auth = getAuth(app);
 
-            // Draw history upon login
             renderAllHistory();
 
             signInAnonymously(auth).then(() => {
@@ -469,21 +480,21 @@
                     const msg = messageInput.value;
                     if(msg.trim() === "" || isTextTooLongForLCD(msg)) return;
                     
-                    sendBtnText.textContent = "Sending...";
+                    sendMsgBtn.innerHTML = `${svgIcons.send} <span>Sending...</span>`;
                     sendMsgBtn.classList.add('opacity-80', 'cursor-not-allowed');
                     sendMsgBtn.disabled = true;
 
                     set(ref(db, 'messages/text'), msg).then(() => {
-                        // LOG HISTORY
                         addHistory("Sent a sweet note", "mail", "text-rose-500");
-
-                        sendBtnText.textContent = "Delivered! ✓";
+                        
+                        sendMsgBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> <span>Delivered! ✓</span>`;
+                        
                         messageInput.value = ""; 
                         charCounter.textContent = "0/4 Lines";
                         clearBtn.classList.add('hidden');
                         
                         setTimeout(() => {
-                            sendBtnText.textContent = "Send to his screen";
+                            sendMsgBtn.innerHTML = `${svgIcons.send} <span>Send to his screen</span>`;
                             sendMsgBtn.classList.remove('opacity-80', 'cursor-not-allowed');
                             sendMsgBtn.disabled = false;
                         }, 2000);
@@ -493,19 +504,14 @@
                 // 2. Trigger Buzzer
                 buzzBtn.addEventListener('click', () => {
                     set(ref(db, 'commands/buzz'), true);
-                    
-                    // LOG HISTORY
                     addHistory("Buzzed his desk", "bell-ring", "text-amber-500");
                     
-                    buzzBtnText.textContent = 'Desk Alerted!';
-                    buzzBtnIcon.setAttribute('data-lucide', 'check');
-                    lucide.createIcons();
+                    buzzBtn.innerHTML = `${svgIcons.checkBtn} <span>Desk Alerted!</span>`;
                     
                     setTimeout(() => {
-                        if(buzzBtnText.textContent === 'Desk Alerted!') {
-                            buzzBtnText.textContent = 'Buzz His Desk!';
-                            buzzBtnIcon.setAttribute('data-lucide', 'bell-ring');
-                            lucide.createIcons();
+                        // Only revert if she hasn't received the stop confirmation yet
+                        if(buzzBtn.textContent.includes('Desk Alerted!')) {
+                            buzzBtn.innerHTML = `${svgIcons.bell} <span>Buzz His Desk!</span>`;
                         }
                     }, 3000);
                 });
@@ -513,34 +519,31 @@
                 // 3. Listen to physical button press from ESP32
                 onValue(ref(db, 'status/reply'), (snapshot) => {
                     const status = snapshot.val();
+                    console.log("Firebase Database Status Changed:", status); 
+                    
                     if (status === "heart_burst") {
-                        showNotification("Ding! 💖", "He is thinking about you right now!", "heart", "text-rose-500 fill-rose-500 animate-bounce");
+                        // Busy response text for the Heart button
+                        showNotification("He misses u but is busy rn... 🥺", "He let you know he's working, but you're on his mind.", svgIcons.heartPopup, "bg-rose-400");
+                        addHistory("I miss youu but i'm busy rn...🥺", "heart", "text-pink-500 fill-pink-500");
                         
-                        // LOG HISTORY
-                        addHistory("He thought of you", "heart", "text-pink-500 fill-pink-500");
-                        
-                        if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
+                        try { if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]); } catch(e){}
                     
                     } else if (status === "buzz_stopped") {
-                        showNotification("He got it! ✨", "He turned off the desk alarm.", "check-circle-2", "text-emerald-500 fill-emerald-100");
+                        // Romantic response for turning off the Buzzer
+                        showNotification("He responded to your call! 🥰", "He turned off the alarm and is smiling at his desk.", svgIcons.checkPopup, "bg-emerald-400");
+                        addHistory("He responded to your call!", "check-circle", "text-emerald-500");
                         
-                        // LOG HISTORY
-                        addHistory("He stopped the alarm", "check-circle-2", "text-emerald-500");
+                        try { if (navigator.vibrate) navigator.vibrate([50, 100, 50]); } catch(e){}
                         
-                        if (navigator.vibrate) navigator.vibrate([50, 100, 50]);
-                        
-                        buzzBtnText.textContent = 'Alarm Stopped! ✓';
-                        buzzBtnIcon.setAttribute('data-lucide', 'check-circle-2');
+                        // Transform the Buzzer button safely using SVGs
                         buzzBtn.classList.remove('from-amber-400', 'to-orange-500', 'hover:from-amber-500', 'hover:to-orange-600', 'shadow-orange-500/30');
                         buzzBtn.classList.add('from-emerald-400', 'to-green-500', 'hover:from-emerald-500', 'hover:to-green-600', 'shadow-emerald-500/30');
-                        lucide.createIcons();
+                        buzzBtn.innerHTML = `${svgIcons.checkBtn} <span>He responded! ✓</span>`;
                         
                         setTimeout(() => {
-                            buzzBtnText.textContent = 'Buzz His Desk!';
-                            buzzBtnIcon.setAttribute('data-lucide', 'bell-ring');
                             buzzBtn.classList.add('from-amber-400', 'to-orange-500', 'hover:from-amber-500', 'hover:to-orange-600', 'shadow-orange-500/30');
                             buzzBtn.classList.remove('from-emerald-400', 'to-green-500', 'hover:from-emerald-500', 'hover:to-green-600', 'shadow-emerald-500/30');
-                            lucide.createIcons();
+                            buzzBtn.innerHTML = `${svgIcons.bell} <span>Buzz His Desk!</span>`;
                         }, 5000);
                     }
                 });
@@ -548,17 +551,6 @@
             }).catch((error) => {
                 console.error("Auth Error:", error);
                 document.getElementById('connection-status').innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.8)]"></span> Connection Failed';
-            });
-        }
-
-        // --- PWA Service Worker Registration ---
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').then(registration => {
-                    console.log('SW registered');
-                }).catch(err => {
-                    console.log('SW registration failed');
-                });
             });
         }
     </script>
