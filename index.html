@@ -79,18 +79,18 @@
         .animation-delay-2000 { animation-delay: 2s; }
         .animation-delay-4000 { animation-delay: 4s; }
 
-        /* Custom Input Scrollbar */
-        textarea::-webkit-scrollbar { width: 4px; }
-        textarea::-webkit-scrollbar-track { background: transparent; }
-        textarea::-webkit-scrollbar-thumb { background: rgba(244, 63, 94, 0.5); border-radius: 4px; }
+        /* Custom Scrollbars for Textarea and History */
+        .custom-scrollbar::-webkit-scrollbar, textarea::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track, textarea::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb, textarea::-webkit-scrollbar-thumb { background: rgba(244, 63, 94, 0.5); border-radius: 4px; }
     </style>
 </head>
-<body class="min-h-screen bg-slate-100 dark:bg-slate-900 transition-colors duration-500 flex items-center justify-center p-4 relative overflow-hidden">
+<body class="min-h-screen bg-slate-100 dark:bg-slate-900 transition-colors duration-500 flex items-center justify-center py-12 px-4 relative overflow-x-hidden">
 
     <!-- Playful Background Blobs -->
-    <div class="absolute top-0 -left-4 w-72 h-72 bg-purple-400 dark:bg-purple-900 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-2xl opacity-60 animate-blob"></div>
-    <div class="absolute top-0 -right-4 w-72 h-72 bg-rose-400 dark:bg-rose-900 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-2xl opacity-60 animate-blob animation-delay-2000"></div>
-    <div class="absolute -bottom-8 left-20 w-72 h-72 bg-pink-400 dark:bg-pink-900 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-2xl opacity-60 animate-blob animation-delay-4000"></div>
+    <div class="absolute top-0 -left-4 w-72 h-72 bg-purple-400 dark:bg-purple-900 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-2xl opacity-60 animate-blob pointer-events-none"></div>
+    <div class="absolute top-0 -right-4 w-72 h-72 bg-rose-400 dark:bg-rose-900 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-2xl opacity-60 animate-blob animation-delay-2000 pointer-events-none"></div>
+    <div class="absolute -bottom-8 left-20 w-72 h-72 bg-pink-400 dark:bg-pink-900 rounded-full mix-blend-multiply dark:mix-blend-lighten filter blur-2xl opacity-60 animate-blob animation-delay-4000 pointer-events-none"></div>
 
     <!-- ================== LOGIN SCREEN ================== -->
     <div id="login-screen" class="glass-panel w-full max-w-sm rounded-[2rem] p-8 relative z-20 text-center transition-all duration-700 transform">
@@ -136,13 +136,27 @@
             </button>
         </div>
 
+        <!-- Inline Notification Banner -->
+        <div id="notification-banner" class="hidden opacity-0 -translate-y-2 transform transition-all duration-500 mb-6 rounded-2xl bg-gradient-to-r from-rose-100 to-pink-100 dark:from-rose-900/40 dark:to-pink-900/40 border border-rose-200 dark:border-rose-800 p-4 flex items-center gap-4 shadow-inner">
+            <div id="notif-icon-container" class="relative">
+                <i id="notif-icon" data-lucide="heart" class="w-7 h-7 text-rose-500 fill-rose-500 animate-bounce relative z-10 filter drop-shadow-md"></i>
+                <div class="absolute inset-0 bg-rose-400 blur-xl opacity-60 rounded-full animate-pulse"></div>
+            </div>
+            <div class="flex-1">
+                <h3 id="notif-title" class="font-bold text-slate-800 dark:text-rose-100 text-sm tracking-tight">Ding! 💖</h3>
+                <p id="notif-desc" class="text-xs text-slate-600 dark:text-rose-200/80 font-medium mt-0.5">He is thinking about you right now!</p>
+            </div>
+            <button id="closeNotifBtn" class="text-slate-400 hover:text-rose-500 transition-colors p-1">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+
         <!-- Text Message Section -->
         <div class="mb-6 relative">
             <div class="relative">
-                <!-- Removed maxlength="80" to allow for smart JS validation -->
                 <textarea id="messageInput" rows="3" 
-                    class="w-full bg-white/50 dark:bg-slate-900/50 border-2 border-slate-200 dark:border-slate-700/50 rounded-2xl p-4 pb-8 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-rose-400 transition-all shadow-inner font-medium resize-none"
-                    placeholder="heyy type in a message..."></textarea>
+                    class="w-full bg-white/50 dark:bg-slate-900/50 border-2 border-slate-200 dark:border-slate-700/50 rounded-2xl p-4 pb-8 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-rose-400 transition-all shadow-inner font-medium resize-none custom-scrollbar"
+                    placeholder="helloo jaanuu..."></textarea>
                 
                 <!-- Character Counter -->
                 <div class="absolute bottom-3 right-3 text-xs font-bold text-slate-400 dark:text-slate-500" id="charCounter">0/4 Lines</div>
@@ -158,36 +172,25 @@
 
         <!-- Buzzer Section -->
         <div class="mt-4 pt-6 border-t-2 border-slate-200/60 dark:border-slate-700/60 transition-colors duration-500">
-            <button id="buzzBtn" class="btn-press w-full bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white font-bold text-lg py-4 rounded-2xl shadow-xl shadow-orange-500/30 flex items-center justify-center gap-2 group">
-                <i data-lucide="bell-ring" class="w-6 h-6 group-hover:animate-wiggle"></i>
-                Buzz His Desk!
+            <button id="buzzBtn" class="btn-press w-full bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white font-bold text-lg py-4 rounded-2xl shadow-xl shadow-orange-500/30 flex items-center justify-center gap-2 group transition-all">
+                <i id="buzzBtnIcon" data-lucide="bell-ring" class="w-6 h-6 group-hover:animate-wiggle"></i>
+                <span id="buzzBtnText">Buzz His Desk!</span>
             </button>
         </div>
-    </div>
 
-    <!-- Fun "He's thinking of you" Popup Modal -->
-    <div id="love-popup" class="fixed inset-0 flex items-center justify-center pointer-events-none z-50 opacity-0 transition-opacity duration-300">
-        <div class="absolute inset-0 bg-slate-900/30 dark:bg-slate-900/70 backdrop-blur-md"></div>
-        <div id="love-popup-card" class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl p-8 rounded-[2rem] shadow-2xl transform scale-50 transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) text-center border border-pink-200 dark:border-pink-800 relative z-10 flex flex-col items-center gap-4">
-            <div class="relative">
-                <i data-lucide="heart" class="w-24 h-24 text-rose-500 fill-rose-500 animate-bounce relative z-10 filter drop-shadow-lg"></i>
-                <div class="absolute inset-0 bg-rose-400 blur-2xl opacity-60 rounded-full animate-pulse"></div>
+        <!-- NEW: History / Activity Log Section -->
+        <div class="mt-6 pt-5 border-t-2 border-slate-200/60 dark:border-slate-700/60 transition-colors duration-500">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-sm font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
+                    <i data-lucide="history" class="w-4 h-4 text-slate-500"></i> Activity Log
+                </h3>
+                <button id="clearHistoryBtn" class="text-xs font-semibold text-slate-400 hover:text-rose-500 transition-colors hidden">Clear</button>
             </div>
-            <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mt-2 tracking-tight">Ding! 💖</h2>
-            <p class="text-lg text-slate-600 dark:text-slate-300 font-medium">He is thinking about you right now!</p>
-        </div>
-    </div>
-
-    <!-- Acknowledgement Popup -->
-    <div id="ack-popup" class="fixed inset-0 flex items-center justify-center pointer-events-none z-50 opacity-0 transition-opacity duration-300">
-        <div class="absolute inset-0 bg-slate-900/30 dark:bg-slate-900/70 backdrop-blur-md"></div>
-        <div id="ack-popup-card" class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl p-8 rounded-[2rem] shadow-2xl transform scale-50 transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1) text-center border border-emerald-200 dark:border-emerald-800 relative z-10 flex flex-col items-center gap-4">
-            <div class="relative">
-                <i data-lucide="check-circle-2" class="w-24 h-24 text-emerald-500 relative z-10 filter drop-shadow-lg"></i>
-                <div class="absolute inset-0 bg-emerald-400 blur-2xl opacity-60 rounded-full animate-pulse"></div>
+            
+            <div id="historyLog" class="custom-scrollbar max-h-36 overflow-y-auto space-y-2 pr-1">
+                <p id="emptyHistory" class="text-xs text-slate-400 text-center py-4 italic">No activity yet</p>
+                <!-- Log entries will be inserted here dynamically -->
             </div>
-            <h2 class="text-3xl font-extrabold text-slate-800 dark:text-white mt-2 tracking-tight">He got it! ✨</h2>
-            <p class="text-lg text-slate-600 dark:text-slate-300 font-medium">He turned off the desk alarm.</p>
         </div>
     </div>
 
@@ -222,14 +225,99 @@
         const sendBtnText = document.getElementById('sendBtnText');
         const sendMsgBtn = document.getElementById('sendMsgBtn');
         const buzzBtn = document.getElementById('buzzBtn');
+        const buzzBtnIcon = document.getElementById('buzzBtnIcon');
+        const buzzBtnText = document.getElementById('buzzBtnText');
 
-        // --- NEW: Smart LCD Simulation Logic ---
+        // Notification Banner Elements
+        const notifBanner = document.getElementById('notification-banner');
+        const notifIcon = document.getElementById('notif-icon');
+        const notifTitle = document.getElementById('notif-title');
+        const notifDesc = document.getElementById('notif-desc');
+        const closeNotifBtn = document.getElementById('closeNotifBtn');
+        let notifTimeout;
+
+        function closeNotification() {
+            notifBanner.classList.remove('opacity-100', 'translate-y-0');
+            notifBanner.classList.add('opacity-0', '-translate-y-2');
+            setTimeout(() => { notifBanner.classList.add('hidden'); }, 500);
+        }
+
+        closeNotifBtn.addEventListener('click', closeNotification);
+
+        function showNotification(title, desc, iconName, colorClass) {
+            clearTimeout(notifTimeout);
+            notifTitle.textContent = title;
+            notifDesc.textContent = desc;
+            
+            notifIcon.setAttribute('data-lucide', iconName);
+            notifIcon.className = `w-7 h-7 relative z-10 filter drop-shadow-md ${colorClass}`;
+            lucide.createIcons();
+            
+            notifBanner.classList.remove('hidden');
+            setTimeout(() => {
+                notifBanner.classList.remove('opacity-0', '-translate-y-2');
+                notifBanner.classList.add('opacity-100', 'translate-y-0');
+            }, 10);
+            
+            notifTimeout = setTimeout(closeNotification, 8000);
+        }
+
+        // ================== HISTORY LOGIC ==================
+        const historyLog = document.getElementById('historyLog');
+        const emptyHistory = document.getElementById('emptyHistory');
+        const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+
+        function renderAllHistory() {
+            const history = JSON.parse(localStorage.getItem('loveBoxHistory') || '[]');
+            
+            // Remove existing dynamic items so we don't duplicate
+            document.querySelectorAll('.history-item').forEach(el => el.remove());
+            
+            if (history.length > 0) {
+                emptyHistory.style.display = 'none';
+                clearHistoryBtn.classList.remove('hidden');
+                
+                history.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'history-item flex items-center justify-between p-2.5 rounded-xl bg-white/40 dark:bg-slate-800/40 text-sm border border-white/20 dark:border-slate-700/30 shadow-sm';
+                    div.innerHTML = `
+                        <div class="flex items-center gap-2.5">
+                            <i data-lucide="${item.icon}" class="w-4 h-4 ${item.color}"></i>
+                            <span class="text-slate-700 dark:text-slate-300 font-medium">${item.action}</span>
+                        </div>
+                        <span class="text-xs text-slate-400 font-bold">${item.time}</span>
+                    `;
+                    historyLog.appendChild(div);
+                });
+                lucide.createIcons();
+            } else {
+                emptyHistory.style.display = 'block';
+                clearHistoryBtn.classList.add('hidden');
+            }
+        }
+
+        function addHistory(action, icon, color) {
+            // Get current local time nicely formatted (e.g. 2:15 PM)
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const item = { action, icon, color, time };
+            
+            let history = JSON.parse(localStorage.getItem('loveBoxHistory') || '[]');
+            history.unshift(item); // Add newest to the top
+            if(history.length > 20) history.pop(); // Keep only the last 20 items to save space
+            
+            localStorage.setItem('loveBoxHistory', JSON.stringify(history));
+            renderAllHistory(); // Re-draw list
+        }
+
+        clearHistoryBtn.addEventListener('click', () => {
+            localStorage.removeItem('loveBoxHistory');
+            renderAllHistory();
+        });
+
+        // --- Smart LCD Simulation Logic ---
         function isTextTooLongForLCD(text) {
-            // Replace newlines with spaces just like the ESP32 does
             text = text.replace(/[\n\r]/g, " ");
-            let row = 0;
-            let col = 0;
-            let i = 0;
+            let row = 0; let col = 0; let i = 0;
 
             while (i < text.length && row < 4) {
                 if (col === 0) {
@@ -252,15 +340,13 @@
                     col += wordLen;
                     i += wordLen;
                     if (col < 20 && i < text.length && text[i] === ' ') {
-                        col++;
-                        i++;
+                        col++; i++;
                     }
                 } else {
-                    row++;
-                    col = 0;
+                    row++; col = 0;
                 }
             }
-            return i < text.length; // Returns true if text overflows 4 rows
+            return i < text.length; 
         }
 
         // Character Counter & Clear Button Logic
@@ -290,13 +376,10 @@
             }
         });
 
-        // Make the "Enter" key send the message automatically (if it fits)
         messageInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault(); 
-                if(!sendMsgBtn.disabled) {
-                    sendMsgBtn.click(); 
-                }
+                if(!sendMsgBtn.disabled) sendMsgBtn.click(); 
             }
         });
 
@@ -325,11 +408,10 @@
             setTimeout(() => {
                 loginScreen.classList.add('hidden');
                 mainApp.classList.remove('hidden');
-                // Trigger reflow for animation
                 void mainApp.offsetWidth; 
                 mainApp.style.opacity = '1';
                 mainApp.style.transform = 'translateY(0)';
-            }, 400); // Matches CSS duration
+            }, 400); 
         }
 
         if (localStorage.getItem('isAuthenticated') === 'true') {
@@ -376,7 +458,9 @@
             const db = getDatabase(app);
             const auth = getAuth(app);
 
-            // Sign in anonymously
+            // Draw history upon login
+            renderAllHistory();
+
             signInAnonymously(auth).then(() => {
                 document.getElementById('connection-status').innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.8)]"></span> Connected securely';
                 
@@ -385,12 +469,14 @@
                     const msg = messageInput.value;
                     if(msg.trim() === "" || isTextTooLongForLCD(msg)) return;
                     
-                    // Visual feedback
                     sendBtnText.textContent = "Sending...";
                     sendMsgBtn.classList.add('opacity-80', 'cursor-not-allowed');
                     sendMsgBtn.disabled = true;
 
                     set(ref(db, 'messages/text'), msg).then(() => {
+                        // LOG HISTORY
+                        addHistory("Sent a sweet note", "mail", "text-rose-500");
+
                         sendBtnText.textContent = "Delivered! ✓";
                         messageInput.value = ""; 
                         charCounter.textContent = "0/4 Lines";
@@ -407,22 +493,55 @@
                 // 2. Trigger Buzzer
                 buzzBtn.addEventListener('click', () => {
                     set(ref(db, 'commands/buzz'), true);
-                    const originalHTML = buzzBtn.innerHTML;
-                    buzzBtn.innerHTML = '<i data-lucide="check" class="w-6 h-6"></i> Desk Alerted!';
+                    
+                    // LOG HISTORY
+                    addHistory("Buzzed his desk", "bell-ring", "text-amber-500");
+                    
+                    buzzBtnText.textContent = 'Desk Alerted!';
+                    buzzBtnIcon.setAttribute('data-lucide', 'check');
                     lucide.createIcons();
+                    
                     setTimeout(() => {
-                        buzzBtn.innerHTML = originalHTML;
-                        lucide.createIcons();
-                    }, 2000);
+                        if(buzzBtnText.textContent === 'Desk Alerted!') {
+                            buzzBtnText.textContent = 'Buzz His Desk!';
+                            buzzBtnIcon.setAttribute('data-lucide', 'bell-ring');
+                            lucide.createIcons();
+                        }
+                    }, 3000);
                 });
 
                 // 3. Listen to physical button press from ESP32
                 onValue(ref(db, 'status/reply'), (snapshot) => {
                     const status = snapshot.val();
                     if (status === "heart_burst") {
-                        triggerFunPopup('love-popup', 'love-popup-card');
+                        showNotification("Ding! 💖", "He is thinking about you right now!", "heart", "text-rose-500 fill-rose-500 animate-bounce");
+                        
+                        // LOG HISTORY
+                        addHistory("He thought of you", "heart", "text-pink-500 fill-pink-500");
+                        
+                        if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
+                    
                     } else if (status === "buzz_stopped") {
-                        triggerFunPopup('ack-popup', 'ack-popup-card');
+                        showNotification("He got it! ✨", "He turned off the desk alarm.", "check-circle-2", "text-emerald-500 fill-emerald-100");
+                        
+                        // LOG HISTORY
+                        addHistory("He stopped the alarm", "check-circle-2", "text-emerald-500");
+                        
+                        if (navigator.vibrate) navigator.vibrate([50, 100, 50]);
+                        
+                        buzzBtnText.textContent = 'Alarm Stopped! ✓';
+                        buzzBtnIcon.setAttribute('data-lucide', 'check-circle-2');
+                        buzzBtn.classList.remove('from-amber-400', 'to-orange-500', 'hover:from-amber-500', 'hover:to-orange-600', 'shadow-orange-500/30');
+                        buzzBtn.classList.add('from-emerald-400', 'to-green-500', 'hover:from-emerald-500', 'hover:to-green-600', 'shadow-emerald-500/30');
+                        lucide.createIcons();
+                        
+                        setTimeout(() => {
+                            buzzBtnText.textContent = 'Buzz His Desk!';
+                            buzzBtnIcon.setAttribute('data-lucide', 'bell-ring');
+                            buzzBtn.classList.add('from-amber-400', 'to-orange-500', 'hover:from-amber-500', 'hover:to-orange-600', 'shadow-orange-500/30');
+                            buzzBtn.classList.remove('from-emerald-400', 'to-green-500', 'hover:from-emerald-500', 'hover:to-green-600', 'shadow-emerald-500/30');
+                            lucide.createIcons();
+                        }, 5000);
                     }
                 });
 
@@ -430,25 +549,6 @@
                 console.error("Auth Error:", error);
                 document.getElementById('connection-status').innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.8)]"></span> Connection Failed';
             });
-        }
-
-        // --- Shared Visual Effect Function ---
-        function triggerFunPopup(popupId, cardId) {
-            const popup = document.getElementById(popupId);
-            const card = document.getElementById(cardId);
-            
-            popup.style.opacity = '1';
-            setTimeout(() => { card.style.transform = 'scale(1)'; }, 50);
-
-            if (navigator.vibrate) {
-                // Heartbeat vibration pattern
-                navigator.vibrate([100, 50, 100, 50, 200]);
-            }
-
-            setTimeout(() => {
-                card.style.transform = 'scale(0.5)';
-                popup.style.opacity = '0';
-            }, 3500);
         }
 
         // --- PWA Service Worker Registration ---
